@@ -29,7 +29,7 @@ function App() {
   let emExecucao = false;
   const audiofla = useRef(hino_do_flamengo);
   const audiovas = useRef(hino_vasco)
-  const [tempoRestante, setTempoRestante] = useState(20);
+  
 
 function reproduzirAudio(){
   if(placar1 === 2){
@@ -39,11 +39,6 @@ function reproduzirAudio(){
   }
 }
 
-function cronometro(){
-  for (let i=20; i<=0; i--){
-
-  }
-}
 
   function recomecar() {
     setValores(jogo);
@@ -170,10 +165,7 @@ function cronometro(){
             <h1>JOGO DA VELHA </h1>
         </section>
 
-        <article>
-          <div></div>
-          <p>Tempo Restante: {tempoRestante}s</p>
-        </article>
+        
 
         <Placar player1={nomeJogador1} player2={nomeJogador2} placar1={placar1} placar2={placar2}/>
         
