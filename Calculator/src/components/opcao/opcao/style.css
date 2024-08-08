@@ -1,0 +1,34 @@
+@keyframes piscar{
+    0%, 100%{
+        opacity:1;
+    }
+    50%{
+        opacity:0;
+    }
+}
+
+.vazio{
+    background-image: url(../../../assets/FUT.JPEG) ;
+    background-size: cover;
+    background-color: white;
+    max-width: 95%;
+}
+.player1{
+    background-image: url(../../../assets/flamengo.png);
+    background-size: cover;
+    transition: 3s;
+    background-position: center;
+    width: 80%;
+}
+.player2{
+    background-image: url(../../../assets/vasco.png);
+    background-size: cover;
+    transition: 3s;
+    background-position: center;
+    width: 80%;
+    
+}
+.vencedor {
+    transform: translateY(-50%);
+    border: 7px solid red;
+}
