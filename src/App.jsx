@@ -1,9 +1,9 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
-import React, { useState, useRef, useEffect, useCallback } from "react"; 
-import Opcao from "./components/opcao/opcao/Opcao";
-import Placar from "./components/opcao/placar/Placar";
 import hino_do_flamengo from "./assets/hino-do-flamengo.mp3";
 import hino_vasco from "./assets/hino-vasco.mp3";
+import Opcao from "./components/opcao/opcao/Opcao";
+import Placar from "./components/opcao/placar/Placar";
 
 function App() {
   const jogo = Array(9).fill({ valor: "vazio" });
@@ -39,9 +39,14 @@ function App() {
 
   const verificaVitoria = useCallback(() => {
     const linhas = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8],
-      [0, 3, 6], [1, 4, 7], [2, 5, 8],
-      [0, 4, 8], [2, 4, 6]
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
     ];
     let jogoEmpatado = true;
 
@@ -63,14 +68,22 @@ function App() {
         }
 
         if (placar1 === 2 || placar2 === 2) {
-          alert(`Parabéns ${placar1 === 2 ? nomeJogador1 : nomeJogador2}, você humilhou o adversário!`);
+          alert(
+            `Parabéns ${
+              placar1 === 2 ? nomeJogador1 : nomeJogador2
+            }, você humilhou o adversário!`
+          );
           reproduzirAudio();
           setPlacar1(0);
           setPlacar2(0);
         }
         return;
       }
-      if (valores[a].valor === "vazio" || valores[b].valor === "vazio" || valores[c].valor === "vazio") {
+      if (
+        valores[a].valor === "vazio" ||
+        valores[b].valor === "vazio" ||
+        valores[c].valor === "vazio"
+      ) {
         jogoEmpatado = false;
       }
     }
@@ -112,7 +125,12 @@ function App() {
         <h1>JOGO DA VELHA</h1>
       </section>
 
-      <Placar player1={nomeJogador1} player2={nomeJogador2} placar1={placar1} placar2={placar2} />
+      <Placar
+        player1={nomeJogador1}
+        player2={nomeJogador2}
+        placar1={placar1}
+        placar2={placar2}
+      />
 
       <section className="tabuleiro">
         {valores.map((item, index) => (
@@ -121,7 +139,9 @@ function App() {
       </section>
 
       <footer>
-        <button onClick={recomecar} className="reset">Recomeçar</button>
+        <button onClick={recomecar} className="reset">
+          Recomeçar
+        </button>
       </footer>
     </div>
   );
