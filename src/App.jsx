@@ -1,12 +1,12 @@
 import "./App.css";
-import React, { useState, useRef, useEffect, useCallback } from "react"; // Adicionado useCallback
+import React, { useState, useRef, useEffect, useCallback } from "react"; 
 import Opcao from "./components/opcao/opcao/Opcao";
 import Placar from "./components/opcao/placar/Placar";
 import hino_do_flamengo from "./assets/hino-do-flamengo.mp3";
 import hino_vasco from "./assets/hino-vasco.mp3";
 
 function App() {
-  const jogo = Array(9).fill({ valor: "vazio" }); // Melhorando inicialização do jogo
+  const jogo = Array(9).fill({ valor: "vazio" }); 
 
   const [valores, setValores] = useState(jogo);
   const [jogador, setJogador] = useState(1);
@@ -15,7 +15,7 @@ function App() {
   const [nomeJogador2, setNomeJogador2] = useState("");
   const [placar1, setPlacar1] = useState(0);
   const [placar2, setPlacar2] = useState(0);
-  const audiofla = useRef(new Audio(hino_do_flamengo)); // Corrigindo referência do áudio
+  const audiofla = useRef(new Audio(hino_do_flamengo)); 
   const audiovas = useRef(new Audio(hino_vasco));
 
   function reproduzirAudio() {
@@ -37,7 +37,7 @@ function App() {
     setJogador(jogador);
   }
 
-  const verificaVitoria = useCallback((valores) => { // Adicionado useCallback
+  const verificaVitoria = useCallback((valores) => { 
     const linhas = [
       [0, 1, 2],
       [3, 4, 5],
@@ -84,14 +84,14 @@ function App() {
       setPodeJogar(false);
       alert("VELHA!");
     }
-  }, [placar1, placar2]); // Corrigida dependência
+  }, [placar1, placar2]); 
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       verificaVitoria(valores);
     }, 1000);
     return () => clearTimeout(timeoutId);
-  }, [valores, verificaVitoria]); // Adicionada dependência correta
+  }, [valores, verificaVitoria]); 
 
   useEffect(() => {
     const nome1 = prompt("Digite o nome do Jogador 1:") || "Jogador 1";
