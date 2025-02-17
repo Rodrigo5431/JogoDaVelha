@@ -6,7 +6,7 @@ import hino_do_flamengo from "./assets/hino-do-flamengo.mp3";
 import hino_vasco from "./assets/hino-vasco.mp3";
 
 function App() {
-  const jogo = Array(9).fill({ valor: "vazio" }); 
+  const jogo = Array(9).fill({ valor: "vazio" });
 
   const [valores, setValores] = useState(jogo);
   const [jogador, setJogador] = useState(1);
@@ -15,16 +15,16 @@ function App() {
   const [nomeJogador2, setNomeJogador2] = useState("");
   const [placar1, setPlacar1] = useState(0);
   const [placar2, setPlacar2] = useState(0);
-  const audiofla = useRef(new Audio(hino_do_flamengo)); 
+  const audiofla = useRef(new Audio(hino_do_flamengo));
   const audiovas = useRef(new Audio(hino_vasco));
 
-  function reproduzirAudio() {
+  const reproduzirAudio = useCallback(() => {
     if (placar1 === 2) {
       audiofla.current.play();
     } else if (placar2 === 2) {
       audiovas.current.play();
     }
-  }
+  }, [placar1, placar2]);
 
   function recomecar() {
     setValores(jogo);
@@ -37,16 +37,11 @@ function App() {
     setJogador(jogador);
   }
 
-  const verificaVitoria = useCallback((valores) => { 
+  const verificaVitoria = useCallback(() => {
     const linhas = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
     ];
     let jogoEmpatado = true;
 
@@ -84,19 +79,18 @@ function App() {
       setPodeJogar(false);
       alert("VELHA!");
     }
-  }, [placar1, placar2]); 
+  }, [valores, placar1, placar2, nomeJogador1, nomeJogador2, reproduzirAudio]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      verificaVitoria(valores);
+      verificaVitoria();
     }, 1000);
     return () => clearTimeout(timeoutId);
-  }, [valores, verificaVitoria]); 
+  }, [valores, verificaVitoria]);
 
   useEffect(() => {
     const nome1 = prompt("Digite o nome do Jogador 1:") || "Jogador 1";
     const nome2 = prompt("Digite o nome do Jogador 2:") || "Jogador 2";
-
     setNomeJogador1(nome1);
     setNomeJogador2(nome2);
   }, []);
