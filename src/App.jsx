@@ -1,22 +1,12 @@
 import "./App.css";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react"; // Adicionado useCallback
 import Opcao from "./components/opcao/opcao/Opcao";
 import Placar from "./components/opcao/placar/Placar";
 import hino_do_flamengo from "./assets/hino-do-flamengo.mp3";
 import hino_vasco from "./assets/hino-vasco.mp3";
 
 function App() {
-  const jogo = [
-    { valor: "vazio" },
-    { valor: "vazio" },
-    { valor: "vazio" },
-    { valor: "vazio" },
-    { valor: "vazio" },
-    { valor: "vazio" },
-    { valor: "vazio" },
-    { valor: "vazio" },
-    { valor: "vazio" },
-  ];
+  const jogo = Array(9).fill({ valor: "vazio" }); // Melhorando inicialização do jogo
 
   const [valores, setValores] = useState(jogo);
   const [jogador, setJogador] = useState(1);
@@ -25,8 +15,8 @@ function App() {
   const [nomeJogador2, setNomeJogador2] = useState("");
   const [placar1, setPlacar1] = useState(0);
   const [placar2, setPlacar2] = useState(0);
-  const audiofla = useRef(hino_do_flamengo);
-  const audiovas = useRef(hino_vasco);
+  const audiofla = useRef(new Audio(hino_do_flamengo)); // Corrigindo referência do áudio
+  const audiovas = useRef(new Audio(hino_vasco));
 
   function reproduzirAudio() {
     if (placar1 === 2) {
@@ -41,12 +31,13 @@ function App() {
     setJogador(1);
     setPodeJogar(true);
   }
+
   function jogada(jogador, temp) {
     setValores(temp);
     setJogador(jogador);
   }
 
-  function verificaVitoria(valores) {
+  const verificaVitoria = useCallback((valores) => { // Adicionado useCallback
     const linhas = [
       [0, 1, 2],
       [3, 4, 5],
@@ -66,37 +57,25 @@ function App() {
         valores[b].valor === valores[c].valor &&
         valores[a].valor !== "vazio"
       ) {
-        valores[a].vencedor = true;
-        valores[b].vencedor = true;
-        valores[c].vencedor = true;
         setPodeJogar(false);
 
         if (valores[a].valor === "player1") {
-          alert(`Parabens, Vitória do ${nomeJogador1}`);
-          setPlacar1(placar1 + 1);
-        } else if (valores[a].valor === "player2") {
-          alert(`Parabens, Vitória do ${nomeJogador2}`);
-          setPlacar2(placar2 + 1);
-        }
-        if (placar1 === 2) {
-          alert(`Parabens ${nomeJogador1}, voce humilhou o ${nomeJogador2}`);
-          reproduzirAudio();
-          setPlacar1(0);
-          setPlacar2(0);
-        } else if (placar2 === 2) {
-          setPlacar2(placar2 + 1);
-          alert(`Parabens ${nomeJogador2}, voce humilhou o ${nomeJogador1}`);
-          reproduzirAudio();
-          setPlacar2(0);
-          setPlacar1(0);
+          alert(`Parabéns, Vitória do ${nomeJogador1}`);
+          setPlacar1((prev) => prev + 1);
+        } else {
+          alert(`Parabéns, Vitória do ${nomeJogador2}`);
+          setPlacar2((prev) => prev + 1);
         }
 
+        if (placar1 === 2 || placar2 === 2) {
+          alert(`Parabéns ${placar1 === 2 ? nomeJogador1 : nomeJogador2}, você humilhou o adversário!`);
+          reproduzirAudio();
+          setPlacar1(0);
+          setPlacar2(0);
+        }
         return;
-      } else if (
-        valores[a].valor === "vazio" ||
-        valores[b].valor === "vazio" ||
-        valores[c].valor === "vazio"
-      ) {
+      }
+      if (valores[a].valor === "vazio" || valores[b].valor === "vazio" || valores[c].valor === "vazio") {
         jogoEmpatado = false;
       }
     }
@@ -105,77 +84,52 @@ function App() {
       setPodeJogar(false);
       alert("VELHA!");
     }
-  }
-
-  function aoClicar(index) {
-    if (podeJogar) {
-      if (
-        valores[index].valor === "player1" ||
-        valores[index].valor === "player2"
-      ) {
-        alert("Nao pode");
-      } else {
-        if (jogador === 1) {
-          let temp = [...valores];
-          temp[index].valor = "player1";
-          jogada(2, temp);
-          console.log(`Vez do jogador ${jogador} (1)`);
-        } else if (jogador === 2) {
-          setJogador(1);
-          let temp = [...valores];
-          temp[index].valor = "player2";
-          jogada(1, temp);
-          console.log(`Vez do jogador ${jogador} (2)`);
-        }
-      }
-    } else {
-      return false;
-    }
-  }
+  }, [placar1, placar2]); // Corrigida dependência
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       verificaVitoria(valores);
     }, 1000);
     return () => clearTimeout(timeoutId);
-  }, [valores]);
+  }, [valores, verificaVitoria]); // Adicionada dependência correta
 
   useEffect(() => {
-    const nome1 = prompt("Digite o nome do Jogador 1:");
-    const nome2 = prompt("Digite o nome do Jogador 2:");
+    const nome1 = prompt("Digite o nome do Jogador 1:") || "Jogador 1";
+    const nome2 = prompt("Digite o nome do Jogador 2:") || "Jogador 2";
 
-    setNomeJogador1(nome1 || "Jogador 1");
-    setNomeJogador2(nome2 || "Jogador 2");
+    setNomeJogador1(nome1);
+    setNomeJogador2(nome2);
   }, []);
 
-  return (
-    <body>
-      <audio ref={audiofla} src={hino_do_flamengo} type="audio/mp3"></audio>
-      <audio ref={audiovas} src={hino_vasco} type="audio/mp3"></audio>
+  function aoClicar(index) {
+    if (!podeJogar || valores[index].valor !== "vazio") {
+      alert("Jogada inválida!");
+      return;
+    }
 
+    const temp = [...valores];
+    temp[index] = { valor: jogador === 1 ? "player1" : "player2" };
+    jogada(jogador === 1 ? 2 : 1, temp);
+  }
+
+  return (
+    <div>
       <section className="container">
-        <h1>JOGO DA VELHA </h1>
+        <h1>JOGO DA VELHA</h1>
       </section>
 
-      <Placar
-        player1={nomeJogador1}
-        player2={nomeJogador2}
-        placar1={placar1}
-        placar2={placar2}
-      />
+      <Placar player1={nomeJogador1} player2={nomeJogador2} placar1={placar1} placar2={placar2} />
 
       <section className="tabuleiro">
-        {valores.map((item, index) => {
-          return <Opcao aoClicar={aoClicar} item={item} index={index} />;
-        })}
+        {valores.map((item, index) => (
+          <Opcao key={index} aoClicar={() => aoClicar(index)} item={item} />
+        ))}
       </section>
 
       <footer>
-        <button onClick={recomecar} className="reset">
-          Recomeçar
-        </button>
+        <button onClick={recomecar} className="reset">Recomeçar</button>
       </footer>
-    </body>
+    </div>
   );
 }
 
